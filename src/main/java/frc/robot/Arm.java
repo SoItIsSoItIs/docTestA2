@@ -58,7 +58,7 @@ public class Arm {
 
   // Returns true if the arm currently at the angle specified by armSetpoint, within the tolerance specified by armTol.
   public boolean atSetpoint() {
-    return Math.abs(getArmEncoder() - armSetpoint) < armTol;
+    return true; //Math.abs(getArmEncoder() - armSetpoint) < armTol;
   }
 
   // Changes the angle that the arm will move to. Units: degrees

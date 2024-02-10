@@ -29,7 +29,8 @@ public class Robot extends TimedRobot {
   private static final String auto1 = "Auto 1";
   private static final String auto2 = "Auto 2";
   private static final String auto3 = "Auto 3"; 
-  private static final String auto4 = "Auto 4"; 
+  private static final String auto4 = "Auto 4";
+  private static final String auto5 = "Auto 5";  
   private String autoSelected;
   private int autoStage = 1;
 
@@ -39,9 +40,15 @@ public class Robot extends TimedRobot {
     autoChooser.addOption(auto2, auto2);
     autoChooser.addOption(auto3, auto3);
     autoChooser.addOption(auto4, auto4);
+    autoChooser.addOption(auto5, auto5);
     SmartDashboard.putData("Autos", autoChooser);
 
-    swerve.loadPath("Test", 0.0, 0.0, 0.0, 180.0); // Loads the path. All paths should be loaded in robotInit() because this call is computationally expensive.
+    swerve.loadPath("moveBack", 0.0, 0.0, 0.0, 180.0); //0 Loads the path. All paths should be loaded in robotInit() because this call is computationally expensive.
+    swerve.loadPath("moveBackGet", 0.0, 0.0, 0.0, 180.0); //1 Loads the path. All paths should be loaded in robotInit() because this call is computationally expensive.
+    swerve.loadPath("moveBackGet2", 0.0, 0.0, 0.0, 180.0);//2
+    swerve.loadPath("noteRushP1", 0.0, 0.0, 0.0, 180.0);//3
+    swerve.loadPath("noteRushP2", 0.0, 0.0, 0.0, 180.0);//4
+    swerve.loadPath("noteRushP3", 0.0, 0.0, 0.0, 180.0);//5
     createToggles();
 
     // Helps prevent loop overruns when the robot is first enabled. These calls cause the robot to initialize code in other parts of the program so it does not need to be initialized during autonomousInit() or teleopInit(), saving computational resources.
@@ -88,6 +95,10 @@ public class Robot extends TimedRobot {
       case auto4:
         // AutoInit 4 code goes here.
         break;
+
+      case auto5:
+        // AutoInit 5 code goes here.
+        break;
     }
   }
 
@@ -108,6 +119,7 @@ public class Robot extends TimedRobot {
             }
 
             if (!thrower.isThrowing()) { // Condition to move to the next stage. The code in the if statement will execute once (like an autoStageInit()), then move on to the next stage.
+              swerve.resetPathController(0);
               autoStage = 2;
             }
             break;
@@ -117,19 +129,144 @@ public class Robot extends TimedRobot {
             break;
         }
         break;
-
-      case auto2:
         // Auto 2 code goes here.
+      case auto2:
+      switch (autoStage) {
+        case 1: 
+        swerve.aimDrive(0.0, 0.0, aimHeading, true);
+            arm.updateSetpoint(aimArmAngle);
+
+            if (swerve.atAimTarget() && arm.atSetpoint()) {
+              thrower.commandThrow(30.0);
+            }
+
+            if (!thrower.isThrowing()) { 
+              autoStage = 2;
+            }
+        break;
+        case 2:
+          if (!swerve.atPathEndpoint(0)) {
+            swerve.resetPathController(0);
+            swerve.followPath(0);
+          } else {
+            autoStage = 3;
+          }
+          break;
+
+        default:
+        swerve.drive(0.0, 0.0, 0.0, false, 0.0, 0.0);
         break;
 
-      case auto3: 
-        // Auto 3 code goes here.
+      }
         break;
+      case auto3: // Auto 3 code goes here.
+        switch (autoStage) {
+        case 1: 
+        swerve.aimDrive(0.0, 0.0, aimHeading, true);
+            arm.updateSetpoint(aimArmAngle);
 
+            if (swerve.atAimTarget() && arm.atSetpoint()) {
+              thrower.commandThrow(30.0);
+            }
+
+            if (!thrower.isThrowing()) {
+              swerve.resetPathController(2);
+              autoStage = 2;
+            }
+        break;
+        case 2:
+          if (!swerve.atPathEndpoint(2)) {
+            swerve.followPath(2);
+          } else {
+            autoStage = 3;
+          }
+          break;
+
+        default:
+        swerve.drive(0.0, 0.0, 0.0, false, 0.0, 0.0);
+        break;
+      }    
       case auto4: 
-        // Auto 4 code goes here.
+      switch (autoStage) { // Auto 4 code goes here.
+        case 1: 
+        swerve.aimDrive(0.0, 0.0, aimHeading, true);
+            arm.updateSetpoint(aimArmAngle);
+
+            if (swerve.atAimTarget() && arm.atSetpoint()) {
+              thrower.commandThrow(30.0);
+            }
+
+            if (!thrower.isThrowing()) { 
+              swerve.resetPathController(1);
+              autoStage = 2;
+            }
         break;
+        case 2:
+          if (!swerve.atPathEndpoint(1)) {
+            swerve.followPath(1);
+          } else {
+            autoStage = 3;
+          }
+          break;
+
+        default:
+        swerve.drive(0.0, 0.0, 0.0, false, 0.0, 0.0);
+        break;
+      }
+
+      case auto5:
+      switch (autoStage) { // Auto 5 code goes here.
+        case 1: 
+        swerve.aimDrive(0.0, 0.0, aimHeading, true);
+            arm.updateSetpoint(aimArmAngle);
+
+            if (swerve.atAimTarget() && arm.atSetpoint()) {
+              thrower.commandThrow(30.0);
+            }
+
+            if (!thrower.isThrowing()) { 
+              swerve.resetPathController(3);
+              autoStage = 2;
+            }
+        break;
+        case 2:
+          if (!swerve.atPathEndpoint(3)) {
+            swerve.followPath(3);
+          } else {
+            autoStage = 3;
+          }
+          break;
+        case 3:
+
+
+
+        if (thrower.getSensor1()) {
+          autoStage = 4;
+        }
+
+         break;
+         case 4:
+
+
+
+
+
+         break;
+         case 5:
+
+
+
+
+
+        break;
+
+        default:
+        swerve.drive(0.0, 0.0, 0.0, false, 0.0, 0.0);
+        break;
+      }
     }
+
+    
   }
 
   public void teleopInit() {
