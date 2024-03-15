@@ -22,11 +22,23 @@ public class Arm {
   private boolean armMotor1Failure = false; 
   private boolean armMotor2Failure = false; 
 
+<<<<<<< Updated upstream
   private final DutyCycleEncoder armEncoder = new DutyCycleEncoder(2); // Keeps track of the angle of the arm.
   private double armEncoderZero = 0.0; // The initial arm position reading of the encoder in rotations. TODO: Find this value.
   private double armSetpoint = 50.0; // The last requested setpoint of the arm in degrees. 0 degrees is horizontal and 90 degrees is vertical. 
   private final double armTol = 0.5; // The acceptable error in the angle of the arm in degrees.
   private final double gearRatio = 1.0; // TODO: Find this value.
+=======
+  private final DutyCycleEncoder armEncoderLeft = new DutyCycleEncoder(0); // Keeps track of the angle of the arm.
+  private final DutyCycleEncoder armEncoderRight = new DutyCycleEncoder(9);
+  private double armEncoderLeftZero = 0.696; // The initial arm position reading of the encoder in rotations.
+  private double armEncoderRightZero = 0.659; 
+  private double armSetpoint = 75.0; // The last requested setpoint of the arm in degrees. 0 degrees is horizontal and 90 degrees is vertical. 
+  private final double armTol = 0.2; // The acceptable error in the angle of the arm in degrees.
+  private final double gearRatio = 288.0; // 72:12 chain. 3:1, 4:1, and 4:1 stacked planetaries.
+  private final double lowLimit = -6.0; // The lower limit of the arm in degrees.
+  private final double highLimit = 75.0; // The higher limit of the arm in degrees.
+>>>>>>> Stashed changes
 
   private boolean manualControl = false; // Indicates whether the arm is under manual control. This can happen if there is a motor failure, or if the operator requests it via setManualControl().
   private double manualPower = 0.0; // Stores the desired output of the arm motor when it is under manual control.
@@ -67,8 +79,24 @@ public class Arm {
   }
 
   // Returns the position of the arm in degrees.
+<<<<<<< Updated upstream
   public double getArmEncoder() {
     return armEncoder.getAbsolutePosition()*360.0 - armEncoderZero; 
+=======
+  public double getArmEncoderLeft() {
+    double encoderValue = armEncoderLeftZero - armEncoderLeft.getAbsolutePosition();
+    return encoderValue*360.0; 
+>>>>>>> Stashed changes
+  }
+
+  public double getArmEncoderRight() {
+    double encoderValue = armEncoderRightZero - armEncoderRight.getAbsolutePosition();
+    return encoderValue*360.0;
+  }
+
+  public double getArmEncoders() {
+   double encoderValues = (getArmEncoderLeft() + getArmEncoderRight()) / 2.0;
+   return encoderValues;
   }
 
   public void setManualPower(double _manualPower) {
@@ -95,7 +123,39 @@ public class Arm {
 
   // Returns true if either of the motors failed to configure on startup or reboot.
   public boolean getMotorFailure() {
+<<<<<<< Updated upstream
     return armMotor1Failure || armMotor2Failure;
+=======
+    return armMotorLFailure || armMotorRFailure;
+  }
+
+  // Attempts to reboot by reconfiguring the motors. Use if trying to troubleshoot during a match.
+  public void reboot() {
+    armMotorLFailure = !configMotor(armMotorL, armMotorLFailure, false);
+    armMotorRFailure = !configMotor(armMotorR, armMotorRFailure, true);
+    manualControl = getMotorFailure();  
+    calibrate();
+  }
+
+  // Syncs the falcon encoder and arm encoder.
+  public void calibrate() {
+   if (!getMotorFailure()) {
+      armMotorInitialPos = armMotorL.getRotorPosition().getValueAsDouble();
+      armEncoderInitialPos = getArmEncoders();
+      isCalibrated = true;
+    } else if (!armMotorRFailure) {
+      armMotorInitialPos = armMotorR.getRotorPosition().getValueAsDouble();
+      armEncoderInitialPos = getArmEncoders();
+      isCalibrated = true;
+    } else {
+      isCalibrated = false;
+    }
+  }
+
+  // Indicates whether the arm was able to calibrate its position on start up.
+  public boolean isCalibrated() {
+    return isCalibrated;
+>>>>>>> Stashed changes
   }
 
   // Sends information to the dashboard each period. This is handled automatically by the class.
@@ -104,7 +164,13 @@ public class Arm {
     SmartDashboard.putBoolean("armFailure", getMotorFailure());
     SmartDashboard.putBoolean("atArmSetpoint", atSetpoint());
     SmartDashboard.putNumber("armSetpoint", armSetpoint);
+<<<<<<< Updated upstream
     SmartDashboard.putNumber("armAngle", getArmEncoder());
+=======
+    SmartDashboard.putNumber("armAngle Left", getArmEncoderLeft());
+    SmartDashboard.putNumber("armAngle Right", getArmEncoderRight());
+    SmartDashboard.putBoolean("Arm Calibrated", isCalibrated());
+>>>>>>> Stashed changes
   }
 
   // Sets PID constants, brake mode, inverts, and enforces a 40 A current limit. Returns true if the motor successfully configured.

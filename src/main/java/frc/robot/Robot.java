@@ -26,11 +26,20 @@ public class Robot extends TimedRobot {
 
   // Auto Chooser Variables
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
+<<<<<<< Updated upstream
   private static final String auto1 = "Auto 1";
   private static final String auto2 = "Auto 2";
   private static final String auto3 = "Auto 3"; 
   private static final String auto4 = "Auto 4";
   private static final String auto5 = "Auto 5";  
+=======
+  private static final String auto1 = "1 Piece";
+  private static final String auto2 = "2 Piece";
+  private static final String auto3 = "3 Piece"; 
+  private static final String auto4 = "Climber Reset";
+  private static final String auto5 = "Auto 5";
+  private static final String auto6 = "Auto 6";  
+>>>>>>> Stashed changes
   private String autoSelected;
   private int autoStage = 1;
 
@@ -111,8 +120,13 @@ public class Robot extends TimedRobot {
         switch (autoStage) {
           case 1: 
             // Auto 1 code goes here.
+<<<<<<< Updated upstream
             swerve.aimDrive(0.0, 0.0, aimHeading, true);
             arm.updateSetpoint(aimArmAngle);
+=======
+            swerve.driveTo(1.91, swerve.isBlueAlliance() ? 5.48 : Drivetrain.fieldWidth - 5.48, getAimHeading());
+            arm.updateSetpoint(getAimArmAngle());
+>>>>>>> Stashed changes
 
             if (swerve.atAimTarget() && arm.atSetpoint()) {
               thrower.commandThrow(30.0);
@@ -215,14 +229,36 @@ public class Robot extends TimedRobot {
       }
 
       case auto5:
+<<<<<<< Updated upstream
       switch (autoStage) { // Auto 5 code goes here.
         case 1: 
         swerve.aimDrive(0.0, 0.0, aimHeading, true);
             arm.updateSetpoint(aimArmAngle);
+=======
+        // Auto 5 code goes here.
+        switch (autoStage) {
+          case 1:
+            swerve.driveTo(2.0, (swerve.isBlueAlliance() ? 7.5 : Drivetrain.fieldWidth - 7.5), (swerve.isBlueAlliance() ? -90.0 : 90.0));
+            arm.updateSetpoint(armAmpSetpoint);
+            thrower.setDisableFlywheel(true);
+>>>>>>> Stashed changes
 
             if (swerve.atAimTarget() && arm.atSetpoint()) {
               thrower.commandThrow(30.0);
             }
+<<<<<<< Updated upstream
+=======
+            break;
+          
+          case 2:
+            swerve.driveTo(3.5, (swerve.isBlueAlliance() ? 7.5 : Drivetrain.fieldWidth - 7.5), 0.0);
+            arm.updateSetpoint(armDriveSetpoint);
+            if (swerve.atDriveGoal()) {
+              swerve.resetDriveController(0.0);
+              autoStage = -1;
+            }
+            break;
+>>>>>>> Stashed changes
 
             if (!thrower.isThrowing()) { 
               swerve.resetPathController(3);
@@ -272,6 +308,15 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     swerve.pushCalibration(); // Updates the robot's position on the field.
     thrower.init(); // Must be called during autoInit() and teleopInit() for the thrower to work properly.
+<<<<<<< Updated upstream
+=======
+    climber.init();
+    arm.init();
+    rumbleTimer.restart();
+    noteFiredTimer.restart();
+
+    
+>>>>>>> Stashed changes
   }
 
   public void teleopPeriodic() {
@@ -295,8 +340,16 @@ public class Robot extends TimedRobot {
       swerve.resetAimDriveController(aimHeading);
     }
     if (driver.getRawButton(6)) { // Right Bumper
+<<<<<<< Updated upstream
       swerve.aimDrive(xVel, yVel, aimHeading, true);
     } else {
+=======
+      swerve.driveTo(1.89, (swerve.isBlueAlliance() ? 5.56 : Drivetrain.fieldWidth - 5.56), getAimHeading()); // Snap to speaker.
+    } else if (driver.getRawButton(5)) { // Left Bumper
+      swerve.driveTo(1.8, (swerve.isBlueAlliance() ? 7.33 : Drivetrain.fieldWidth - 7.33), swerve.isBlueAlliance() ? -90 : 90); // Snap to amp.
+    }
+    else {
+>>>>>>> Stashed changes
       swerve.drive(xVel, yVel, angVel, true, 0.0, 0.0); // Drives the robot at a certain speed and rotation rate. Units: meters per second for xVel and yVel, radians per second for angVel.
     }
 
@@ -320,11 +373,16 @@ public class Robot extends TimedRobot {
       }
     }
 
+<<<<<<< Updated upstream
     arm.periodic(); // Should be called in teleopPeriodic() and autoPeriodic(). Handles the internal logic of the arm.
     if (arm.getManualControl()) {
       arm.setManualPower(0.0); // TODO: Change the inputs to this function to their appropriate keybinds.
     } else {
       arm.updateSetpoint(aimArmAngle); // Changes the setpoint of the arm to the calculated arm angle needed to make a shot.
+=======
+    if (operator.getRawButtonPressed(7) && arm.getArmEncoderLeft() < 10.0) { // Mode Button
+      climber.disableLockout();
+>>>>>>> Stashed changes
     }
 
     climber.periodic();
